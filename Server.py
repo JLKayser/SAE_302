@@ -36,11 +36,11 @@ class ClientThread(threading.Thread):
             if msg=='bye':
               break
             if msg=='ip':
-                self.csocket.send(ipconfig().encode())
+                self.csocket.send(ipconfig())
             print ("from client", msg)
         print ("Client at ", clientAddress , " disconnected...")
 
-PORT = 3500
+PORT = 5500
 ADDRESS = '127.0.0.1'
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
