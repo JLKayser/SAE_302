@@ -24,13 +24,13 @@ def msg_send():
 def recv_msg():
     while True:
         try:
-            msg = client_socket.recv(1024).decode("utf8")
+            msg = client_socket.recv(1024).decode()
             print(msg)
         except OSError as error:
             return error
 
 def clean_exit():
-    client_socket.send('exit()'.encode('utf8'))
+    client_socket.send('exit()'.encode())
     client_socket.close()
     sys.exit(0)
 
@@ -41,11 +41,4 @@ while True:
     thread_send = Thread(target=msg_send)
     receive_thread.start()
     thread_send.start()
-    msg_send()
-
-
-
-while True:
-    receive_thread = Thread(target=recv_msg)
-    receive_thread.start()
     msg_send()
