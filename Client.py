@@ -38,5 +38,14 @@ def clean_exit():
 
 while True:
     receive_thread = Thread(target=recv_msg)
+    thread_send = Thread(target=msg_send)
+    receive_thread.start()
+    thread_send.start()
+    msg_send()
+
+
+
+while True:
+    receive_thread = Thread(target=recv_msg)
     receive_thread.start()
     msg_send()
