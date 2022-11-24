@@ -1,40 +1,39 @@
-import socket
-import os
+import socket, threading
+
+def kill():
+    server.close()
+
+class ClientThread(threading.Thread):
+    def __init__(self,clientAddress,clientsocket):
+        threading.Thread.__init__(self)
+        self.csocket = clientsocket
+        print ("New connection added: ", clientAddress)
+    def run(self):
+        print ("Connection from : ", clientAddress)
+        #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
+        msg = ''
+        while True:
+            data = self.csocket.recv(2048)
+            msg = data.decode()
+            if msg=='bye':
+              break
+            if msg=='kill':
+                kill()
+            print ("from client", msg)
+            self.csocket.send(bytes(msg,'UTF-8'))
+        print ("Client at ", clientAddress , " disconnected...")
 
 
-def ipconfig():
-    cmd = os.system('ipconfig')
-    return cmd
+LOCALHOST = "127.0.0.1"
+PORT = 5500
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+server.bind((LOCALHOST, PORT))
 
-ipconfig()
-
-'''def server():
-    # Recevoir le hostname soit ip de la machine
-    host = "localhost"
-    port = 5000  # Port
-
-    server_socket = socket.socket()  # get instance
-    server_socket.bind((host, port))
-
-    # nombre de client qui peuvent se connecter en meme temp
-    server_socket.listen(2)
-
-    conn, address = server_socket.accept()  # accepte les nouvelles connexions
-    print("Connection from: " + str(address))
-    while True:
-        # recois les données et n accepte pas au dessus de 1024 bytes
-        data = conn.recv(1024).decode()
-        if not data:
-            # Si les données ne sont pas recus break
-            server_socket.close()
-            server()
-            break
-        print("from connected user: " + str(data))
-        data = input(' -> ')
-        conn.send(data.encode())  # Envoyer les données au client
-
-    conn.close()  # Fermer la connexion
-
-
-if __name__ == '__main__':
-    server()'''
+print("Server started")
+print("Waiting for client request..")
+while True:
+    server.listen(1)
+    clientsock, clientAddress = server.accept()
+    newthread = ClientThread(clientAddress, clientsock)
+    newthread.start()
