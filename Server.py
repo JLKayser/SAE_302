@@ -1,9 +1,9 @@
 import socket, threading
-import sys , os
+import sys , os , subprocess
 
 
 def ipconfig():
-    cmd = os.system('ipconfig')
+    cmd = subprocess.check_output('ipconfig',shell=True)
     return cmd
 
 
@@ -36,7 +36,7 @@ class ClientThread(threading.Thread):
             if msg=='bye':
               break
             if msg=='ip':
-                self.csocket.send(ipconfig())
+                self.csocket.send(ipconfig().encode())
             print ("from client", msg)
         print ("Client at ", clientAddress , " disconnected...")
 
