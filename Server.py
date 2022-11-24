@@ -1,13 +1,31 @@
 import socket, threading
+import sys , os
 
-def kill():
-    server.close()
+
+def ipconfig():
+    cmd = os.system('ipconfig')
+    return cmd
+
+
+def hostname():
+    cmd = os.system('hostname')
+    return cmd
+
+
+def os_command():
+    cmd = sys.platform
+    if cmd == 'win32':
+        cmd = 'L\'os de la machine est Windows 10'
+    return cmd
+
 
 class ClientThread(threading.Thread):
     def __init__(self,clientAddress,clientsocket):
         threading.Thread.__init__(self)
         self.csocket = clientsocket
         print ("New connection added: ", clientAddress)
+
+
     def run(self):
         print ("Connection from : ", clientAddress)
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
@@ -17,18 +35,16 @@ class ClientThread(threading.Thread):
             msg = data.decode()
             if msg=='bye':
               break
-            if msg=='kill':
-                kill()
+            if msg=='ip':
+                self.csocket.send(ipconfig().encode())
             print ("from client", msg)
-            self.csocket.send(bytes(msg,'UTF-8'))
         print ("Client at ", clientAddress , " disconnected...")
 
-
-LOCALHOST = "127.0.0.1"
-PORT = 5500
+PORT = 3500
+ADDRESS = '127.0.0.1'
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server.bind((LOCALHOST, PORT))
+server.bind((ADDRESS, PORT))
 
 print("Server started")
 print("Waiting for client request..")
