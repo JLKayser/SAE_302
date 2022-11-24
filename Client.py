@@ -1,30 +1,27 @@
 import socket
+import os
+SERVER = "127.0.0.1"
+PORT = 5500
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((SERVER, PORT))
+client.sendall(bytes("This is from Client",'UTF-8'))
 
 
-def client():
-    host = "localhost"
-    port = 5000  # Port du socket server
-
-    client_socket = socket.socket()
-    client_socket.connect((host, port))  # connexion au server
-
-    user = input('Entrez votre nom d\'utilisateur : ')
-    message = input(f"{user} -> ")
-
-    while message != 'arret':
-        client_socket.send(message.encode())  # envoie le message
-        data = client_socket.recv(1024).decode()  # recois les reponses
-        if data == 'bye':
-            client_socket.close()
-            client()
-            break
-
-        print('Received from server: ' + data)
-
-        message = input(f"{user}> ")
-
-    client_socket.close()  # Fermer la connexion
+def ipconfig():
+  cmd = os.system('ipconfig')
+  return cmd
 
 
-if __name__ == '__main__':
-    client()
+
+
+while True:
+  in_data =  client.recv(1024)
+  print("From Server :" ,in_data.decode())
+  out_data = input()
+  client.sendall(bytes(out_data,'UTF-8'))
+  if out_data=='bye':
+    break
+  if out_data=='ipconfig':
+    ipconfig()
+client.close()
+
