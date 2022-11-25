@@ -3,12 +3,12 @@ import sys , os , subprocess
 
 
 def ipconfig():
-    cmd = subprocess.check_output('ipconfig',shell=True)
+    cmd = str(subprocess.check_output('ipconfig',shell=True))
     return cmd
 
 
 def hostname():
-    cmd = os.system('hostname')
+    cmd = str(subprocess.check_output('hostname',shell=True))
     return cmd
 
 
@@ -37,6 +37,8 @@ class ClientThread(threading.Thread):
               break
             if msg=='ip':
                 self.csocket.send(ipconfig().encode())
+            if msg=='hostname':
+                self.csocket.send(hostname().encode())
             print ("from client", msg)
         print ("Client at ", clientAddress , " disconnected...")
 
