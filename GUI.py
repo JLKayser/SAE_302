@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
         self.connect = QPushButton('Connect')
         self.tab1.layout.addWidget(self.pushCommand)
         self.tab1.setLayout(self.tab1.layout)
+        #self.connect.setStyleSheet("border-radius:5px;background-color:black;color:white;height:20px;width:40px;")
 
         grid.addWidget(self.tabs, 0, 0)
         grid.addWidget(self.pushCommand, 3, 0)
