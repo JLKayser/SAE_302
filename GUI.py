@@ -25,6 +25,11 @@ class MainWindow(QMainWindow):
         #self.tabs.setStyleSheet("QWidget { background-color: black }")
         self.tab1.layout = QGridLayout()
         self.pushCommand = QLineEdit("")
+        self.pushCommand.setPlaceholderText("Type an command...")
+        self.addressIP = QLineEdit("")
+        self.addressIP.setPlaceholderText("Type an IP address...")
+        self.port = QLineEdit("")
+        self.port.setPlaceholderText("Type an port...")
         self.connect = QPushButton('Connect')
         self.tab1.layout.addWidget(self.pushCommand)
         self.tab1.setLayout(self.tab1.layout)
@@ -32,7 +37,9 @@ class MainWindow(QMainWindow):
 
         grid.addWidget(self.tabs, 0, 0)
         grid.addWidget(self.pushCommand, 3, 0)
-        self.tab1.layout.addWidget(self.connect, 2 ,0)
+        self.tab1.layout.addWidget(self.connect, 2, 0)
+        self.tab1.layout.addWidget(self.addressIP, 1, 0)
+        self.tab1.layout.addWidget(self.port, 1, 1)
 
 
 
