@@ -52,35 +52,43 @@ client_socket.connect((HOST,PORT))
 client_socket.sendall(bytes("This is from Client",'UTF-8'))
 
 def msg_send():
+    global client_socket
+    user = input('Entrez votre nom d\'utilisateur : ')
     while True:
         try:
-            msg = input('-> ')
-            if msg != 'kill':
-                client_socket.send(msg.encode('utf8'))
+            msg = input(f'{user}-> ')
+            if msg == 'reset':
+                client_socket.close()
+                client_socket = socket(AF_INET, SOCK_STREAM)
+                client_socket.connect((HOST, PORT))
+                client_socket.sendall(bytes("This is from Client", 'UTF-8'))
+                msg_send()
+            if msg != 'disconnect':
+                client_socket.send(msg.encode())
             else:
-                clean_exit()
+                disconnect()
         except EOFError:
-            clean_exit()
+            disconnect()
 
 
 def recv_msg():
     while True:
         try:
-            msg = client_socket.recv(1024).decode()
+            msg = client_socket.recv(2048).decode()
             print(msg)
         except OSError as error:
             return error
 
-def clean_exit():
-    client_socket.send('kill'.encode())
+
+def disconnect():
+    client_socket.send('disconnect'.encode())
     client_socket.close()
     sys.exit(0)
 
 
 
-while True:
+if __name__ == '__main__':
     receive_thread = Thread(target=recv_msg)
     thread_send = Thread(target=msg_send)
     receive_thread.start()
     thread_send.start()
-    msg_send()
