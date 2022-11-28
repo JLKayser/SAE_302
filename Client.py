@@ -53,7 +53,7 @@ client_socket.sendall(bytes("This is from Client",'UTF-8'))
 
 def msg_send():
     global client_socket
-    user = input('Entrez votre nom d\'utilisateur : ')
+    user = input('Enter your username : ')
     while True:
         try:
             msg = input(f'{user}-> ')
@@ -74,11 +74,10 @@ def msg_send():
 def recv_msg():
     while True:
         try:
-            msg = client_socket.recv(2048).decode()
+            msg = client_socket.recv(1024).decode()
             print(msg)
-        except OSError as error:
-            return error
-
+        except:
+            pass
 
 def disconnect():
     client_socket.send('disconnect'.encode())
