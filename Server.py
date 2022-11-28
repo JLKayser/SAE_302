@@ -17,7 +17,11 @@ def hostname():
 def os_command():
     cmd = sys.platform
     if cmd == 'win32':
-        cmd = 'OS de la machine est Windows 10'
+        cmd = 'OS de la machine est Windows'
+    if cmd == 'linux' or cmd == 'linux2':
+        cmd = 'OS de la machine est Linux'
+    if cmd == 'darwin':
+        cmd = 'OS de la machine est MAC OS X'
     x = cmd.replace('\\r', "").replace('\\b', '').replace('\\n', '\n').replace('\\xff', '').replace("'",'')
     return x
 
@@ -25,6 +29,14 @@ def ram():
     cmd = str(subprocess.check_output('wmic memphysical get MaxCapacity', shell=True))
     x = cmd.replace('\\r', "").replace('\\b', '').replace('\\n', '').replace('\\xff', '').replace('b', "").replace("'",'')
     return f'{x} KB'
+
+
+def aide():
+    return ('Voici les commandes possibles pour mon application :\n'
+          '-> ip\n'
+          '-> hostname\n'
+          '-> ram\n'
+          '-> os\n')
 
 
 '''def reset():
@@ -64,6 +76,8 @@ class ClientThread(threading.Thread):
                         self.csocket.send(os_command().encode())
                     if msg == 'ram':
                         self.csocket.send(ram().encode())
+                    if msg == 'help':
+                        self.csocket.send(aide().encode())
                     print ("from client", msg)
             except:
                 print("Client disconnected")
