@@ -1,9 +1,8 @@
 from socket import AF_INET, SOCK_STREAM , socket
 from threading import Thread
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, \
-    QDialog, QMessageBox , QTabWidget , QVBoxLayout
-from PyQt5.QtCore import QCoreApplication
+'''from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox , QTabWidget , QVBoxLayout
+from PyQt5.QtCore import QCoreApplication'''
 
 '''class MainWindow(QMainWindow):
     def __init__(self):
