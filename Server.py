@@ -1,5 +1,6 @@
 import socket, threading
 import sys , os , subprocess
+import psutil
 
 
 def ipconfig():
@@ -37,6 +38,11 @@ def aide():
           '-> hostname\n'
           '-> ram\n'
           '-> os\n')
+
+
+def cpu():
+    cmd = psutil.cpu_percent()
+    return f'Capacity CPU: {cmd} %'
 
 
 '''def reset():
@@ -78,6 +84,8 @@ class ClientThread(threading.Thread):
                         self.csocket.send(ram().encode())
                     if msg == 'help':
                         self.csocket.send(aide().encode())
+                    if msg == 'cpu':
+                        self.csocket.send(cpu().encode())
                     print ("from client", msg)
             except:
                 print("Client disconnected")
