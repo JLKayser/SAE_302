@@ -33,11 +33,12 @@ def ram():
 
 
 def aide():
-    return ('Voici les commandes possibles pour mon application :\n'
-          '-> ip\n'
-          '-> hostname\n'
-          '-> ram\n'
-          '-> os\n')
+    return ('CMD HELP:\n'
+            '-> ip\n'
+            '-> hostname\n'
+            '-> ram\n'
+            '-> os\n'
+            '-> cpu\n')
 
 
 def cpu():
