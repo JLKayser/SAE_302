@@ -30,16 +30,16 @@ def os_command():
 def ram():
     cmd = str(subprocess.check_output('wmic memphysical get MaxCapacity', shell=True))
     x = cmd.replace('\\r', "").replace('\\b', '').replace('\\n', '').replace('\\xff', '').replace('b', "").replace("'",'')
-    return f'{x} KB'
+    return f'RAM {x}KB'
 
 
 def aide():
     return ('CMD HELP:\n'
-            '-> ip\n'
-            '-> hostname\n'
-            '-> ram\n'
-            '-> os\n'
-            '-> cpu\n')
+            '- IP\n'
+            '- HOSTNAME\n'
+            '- RAM\n'
+            '- OS\n'
+            '- CPU\n')
 
 
 def cpu():
@@ -68,25 +68,25 @@ class ClientThread(threading.Thread):
                 data = self.csocket.recv(2048)
                 if data is not None:
                     msg = data.decode()
-                    if msg == 'disconnect':
+                    if msg.lower() == 'disconnect':
                       break
-                    if msg == 'kill':
+                    if msg.lower() == 'kill':
                         server.close()
                         break
                     '''if msg=='reset':
                         reset()
                         break'''
-                    if msg == 'ip':
+                    if msg.lower() == 'ip':
                         self.csocket.send(ipconfig().encode())
-                    if msg == 'hostname':
+                    if msg.lower() == 'hostname':
                         self.csocket.send(hostname().encode())
-                    if msg == 'os':
+                    if msg.lower() == 'os':
                         self.csocket.send(os_command().encode())
-                    if msg == 'ram':
+                    if msg.lower() == 'ram':
                         self.csocket.send(ram().encode())
-                    if msg == 'help':
+                    if msg.lower() == 'help':
                         self.csocket.send(aide().encode())
-                    if msg == 'cpu':
+                    if msg.lower() == 'cpu':
                         self.csocket.send(cpu().encode())
                     print ("from client", msg)
             except:
