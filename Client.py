@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.__tabs.resize(300,300)
 
         self.__tabs.addTab(self.__tab1,"Server")
-        self.__tabs.addTab(self.__tab3,"Server_msg")
+        self.__tabs.addTab(self.__tab3,"Server-CMD")
 
         #self.tabs.setStyleSheet("QWidget { background-color: black }")
         self.__tab1.layout = QGridLayout()
