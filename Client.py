@@ -1,3 +1,4 @@
+import threading
 from socket import AF_INET, SOCK_STREAM , socket
 from threading import Thread
 import sys
@@ -39,7 +40,7 @@ class MainWindow(QMainWindow):
         self.__tab1.layout.addWidget(self.__pushCommand)
         self.__tab1.setLayout(self.__tab1.layout)
         #self.connect.setStyleSheet("border-radius:5px;background-color:black;color:white;height:20px;width:40px;")
-        self.__label = QLabel('->')
+        self.__label = QLabel('-> ')
         self.__tab3.layout.addWidget(self.__label)
         self.__tab3.setLayout(self.__tab3.layout)
 
@@ -51,8 +52,7 @@ class MainWindow(QMainWindow):
 
 
 
-        '''self.__convertir.clicked.connect(self.__ConversionCK)
-        self.__help.clicked.connect(self.__Help)'''
+        '''self.__help.clicked.connect(self.__Help)'''
         self.__connect.clicked.connect(self.__connection)
         self.setWindowTitle("SAE-302")
 
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         msg.setWindowTitle("Aide")
         msg.resize(500, 500)
         msg.setIcon(QMessageBox.Information)
-        msg.setText("Permet de convertir un nombre soit de Kelvin vers Celcuis, soit de Celcuis vers Kelvin.")
+        msg.setText("")
         msg.exec()'''
 
 
@@ -73,10 +73,15 @@ class MainWindow(QMainWindow):
         thread_send = Thread(target=msg_send , args=[self.socket])
         receive_thread.start()
         thread_send.start()
+        self.__addressIP.setText("")
+        self.__addressIP.setPlaceholderText("Retype an IP address...")
+        self.__port.setText("")
+        self.__port.setPlaceholderText("Retype an port...")
 
 
-    def __message_recu(self):
-        pass
+    def message_recu(self):
+        msg = self.socket.recv(1024).decode()
+        self.__label.setText(self.__label.text() + '\n' + msg)
 
 
 
