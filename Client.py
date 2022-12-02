@@ -27,6 +27,7 @@ class MainWindow(QMainWindow):
         self.__tab1.layout = QGridLayout()
         self.__tab3.layout = QGridLayout()
         self.__pushCommand = QLineEdit("")
+        self.__envoie = QPushButton("Send")
         self.__pushCommand.setPlaceholderText("Type a command...")
         self.__addressIP = QLineEdit("")
         self.__addressIP.setPlaceholderText("Type an IP address...")
@@ -47,6 +48,7 @@ class MainWindow(QMainWindow):
 
         grid.addWidget(self.__tabs, 0, 0)
         grid.addWidget(self.__pushCommand, 3, 0)
+        grid.addWidget(self.__envoie, 3, 1)
         self.__tab1.layout.addWidget(self.__connect, 2, 0)
         self.__tab1.layout.addWidget(self.__addressIP, 1, 0)
         self.__tab1.layout.addWidget(self.__port, 1, 1)
@@ -55,6 +57,7 @@ class MainWindow(QMainWindow):
 
         '''self.__help.clicked.connect(self.__Help)'''
         self.__connect.clicked.connect(self.__connection)
+        self.__envoie.clicked.connect(self.__message_send)
         self.setWindowTitle("SAE-302")
 
     def __UnValid(self):
@@ -71,10 +74,10 @@ class MainWindow(QMainWindow):
             HOST = self.__addressIP.text()
             PORT = int(self.__port.text())
             self.socket = connect(HOST,PORT)
-            thread_send = Thread(target=msg_send, args=[self.socket])
-            thread_affichage = Thread(target=self.message_recu)
+            thread_send = Thread(target=self.__message_send)
+            thread_recu = Thread(target=self.__message_recu)
             thread_send.start()
-            thread_affichage.start()
+            thread_recu.start()
             self.__addressIP.setText("")
             self.__addressIP.setPlaceholderText("Retype an IP address...")
             self.__port.setText("")
@@ -83,10 +86,33 @@ class MainWindow(QMainWindow):
             self.__UnValid()
 
 
-    def message_recu(self):
+    def __message_recu(self):
         while True:
             msg = self.socket.recv(1024).decode()
             self.__text.appendPlainText('-> ' + msg + '\n')
+
+    def __message_send(self):
+        while True:
+            try:
+                msg = self.__pushCommand.text()
+                if msg == 'reset':
+                    self.socket.close()
+                    client_socket = socket(AF_INET, SOCK_STREAM)
+                    # new_connection(connection.getpeername())
+                    # client_socket.connect((HOST, PORT))
+                    # client_socket.sendall(bytes("This is from Client", 'UTF-8'))
+                    # msg_send()
+                if msg != 'disconnect':
+                    self.socket.send(msg.encode())
+                else:
+                    self.disconnect()
+            except EOFError:
+                self.disconnect()
+
+    def disconnect(self):
+        self.socket.send('disconnect'.encode())
+        self.socket.close()
+        sys.exit(0)
 
 
 
@@ -98,7 +124,7 @@ def connect(HOST:str,PORT:int):
     return client_socket
 
 
-def msg_send(connection):
+'''def msg_send(connection):
     user = input('Enter your username : ')
     while True:
         try:
@@ -115,7 +141,7 @@ def msg_send(connection):
             else:
                 disconnect(connection)
         except EOFError:
-            disconnect(connection)
+            disconnect(connection)'''''
 
 
 def new_connection():
@@ -130,12 +156,6 @@ def new_connection():
         except:
             pass'''
 
-
-
-def disconnect(connection):
-    connection.send('disconnect'.encode())
-    connection.close()
-    sys.exit(0)
 
 
 
