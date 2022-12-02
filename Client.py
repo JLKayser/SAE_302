@@ -2,7 +2,7 @@ import threading
 from socket import AF_INET, SOCK_STREAM , socket
 from threading import Thread
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox , QTabWidget , QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit
 from PyQt5.QtCore import QCoreApplication
 
 class MainWindow(QMainWindow):
@@ -40,9 +40,14 @@ class MainWindow(QMainWindow):
         self.__tab1.layout.addWidget(self.__pushCommand)
         self.__tab1.setLayout(self.__tab1.layout)
         #self.connect.setStyleSheet("border-radius:5px;background-color:black;color:white;height:20px;width:40px;")
-        self.__label = QLabel('-> ')
-        self.__tab3.layout.addWidget(self.__label)
+        self.__text = QPlainTextEdit()
+        self.__text.setReadOnly(True)
+        self.__tab3.layout.addWidget(self.__text)
+        self.__text.move(10, 10)
+        self.__text.resize(400, 200)
         self.__tab3.setLayout(self.__tab3.layout)
+        self.__text.setPlaceholderText('Bienvenue sur mon invite de commande !')
+
 
         grid.addWidget(self.__tabs, 0, 0)
         grid.addWidget(self.__pushCommand, 3, 0)
@@ -69,10 +74,10 @@ class MainWindow(QMainWindow):
         HOST = self.__addressIP.text()
         PORT = int(self.__port.text())
         self.socket = connect(HOST,PORT)
-        receive_thread = Thread(target=recv_msg, args=[self.socket])
-        thread_send = Thread(target=msg_send , args=[self.socket])
-        receive_thread.start()
+        thread_send = Thread(target=msg_send, args=[self.socket])
+        thread_affichage = Thread(target=self.message_recu)
         thread_send.start()
+        thread_affichage.start()
         self.__addressIP.setText("")
         self.__addressIP.setPlaceholderText("Retype an IP address...")
         self.__port.setText("")
@@ -80,8 +85,9 @@ class MainWindow(QMainWindow):
 
 
     def message_recu(self):
-        msg = self.socket.recv(1024).decode()
-        self.__label.setText(self.__label.text() + '\n' + msg)
+        while True:
+            msg = self.socket.recv(1024).decode()
+            self.__text.setPlainText('-> ' + msg + '\n')
 
 
 
@@ -90,7 +96,6 @@ def connect(HOST:str,PORT:int):
     client_socket = socket(AF_INET, SOCK_STREAM)
     client_socket.connect((HOST,PORT))
     client_socket.sendall(bytes("This is from Client",'UTF-8'))
-    Thread(target=recv_msg, args=[client_socket])
     return client_socket
 
 
@@ -118,13 +123,13 @@ def new_connection():
     pass
 
 
-def recv_msg(connection):
+'''def recv_msg(connection):
     while True:
         try:
             msg = connection.recv(1024).decode()
             print(msg)
         except:
-            pass
+            pass'''
 
 
 
