@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         self.__tab1.layout = QGridLayout()
         self.__tab3.layout = QGridLayout()
         self.__pushCommand = QLineEdit("")
-        self.__pushCommand.setPlaceholderText("Type an command...")
+        self.__pushCommand.setPlaceholderText("Type a command...")
         self.__addressIP = QLineEdit("")
         self.__addressIP.setPlaceholderText("Type an IP address...")
         self.__port = QLineEdit("")
