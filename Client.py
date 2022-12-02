@@ -18,17 +18,14 @@ class MainWindow(QMainWindow):
         widget.setLayout(grid)
         self.__tabs = QTabWidget()
         self.__tab1 = QWidget()
-        self.__tab2 = QWidget()
         self.__tab3 = QWidget()
         self.__tabs.resize(300,300)
 
         self.__tabs.addTab(self.__tab1,"Server")
-        self.__tabs.addTab(self.__tab2,"Client")
         self.__tabs.addTab(self.__tab3,"Server_msg")
 
         #self.tabs.setStyleSheet("QWidget { background-color: black }")
         self.__tab1.layout = QGridLayout()
-        self.__tab2.layout = QGridLayout()
         self.__tab3.layout = QGridLayout()
         self.__pushCommand = QLineEdit("")
         self.__pushCommand.setPlaceholderText("Type an command...")
@@ -61,33 +58,36 @@ class MainWindow(QMainWindow):
         self.__connect.clicked.connect(self.__connection)
         self.setWindowTitle("SAE-302")
 
-    '''def __Help(self):
+    def __Help(self):
         msg = QMessageBox()
-        msg.setWindowTitle("Aide")
+        msg.setWindowTitle("Not valid")
         msg.resize(500, 500)
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("")
-        msg.exec()'''
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText("Please enter a valid IP address or port !")
+        msg.exec()
 
 
     def __connection(self):
-        HOST = self.__addressIP.text()
-        PORT = int(self.__port.text())
-        self.socket = connect(HOST,PORT)
-        thread_send = Thread(target=msg_send, args=[self.socket])
-        thread_affichage = Thread(target=self.message_recu)
-        thread_send.start()
-        thread_affichage.start()
-        self.__addressIP.setText("")
-        self.__addressIP.setPlaceholderText("Retype an IP address...")
-        self.__port.setText("")
-        self.__port.setPlaceholderText("Retype an port...")
+        try:
+            HOST = self.__addressIP.text()
+            PORT = int(self.__port.text())
+            self.socket = connect(HOST,PORT)
+            thread_send = Thread(target=msg_send, args=[self.socket])
+            thread_affichage = Thread(target=self.message_recu)
+            thread_send.start()
+            thread_affichage.start()
+            self.__addressIP.setText("")
+            self.__addressIP.setPlaceholderText("Retype an IP address...")
+            self.__port.setText("")
+            self.__port.setPlaceholderText("Retype an port...")
+        except:
+            self.__Help()
 
 
     def message_recu(self):
         while True:
             msg = self.socket.recv(1024).decode()
-            self.__text.setPlainText('-> ' + msg + '\n')
+            self.__text.appendPlainText('-> ' + msg + '\n')
 
 
 
