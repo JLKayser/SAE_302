@@ -1,4 +1,3 @@
-import threading
 from socket import AF_INET, SOCK_STREAM , socket
 from threading import Thread
 import sys
@@ -58,7 +57,7 @@ class MainWindow(QMainWindow):
         self.__connect.clicked.connect(self.__connection)
         self.setWindowTitle("SAE-302")
 
-    def __Help(self):
+    def __UnValid(self):
         msg = QMessageBox()
         msg.setWindowTitle("Not valid")
         msg.resize(500, 500)
@@ -81,7 +80,7 @@ class MainWindow(QMainWindow):
             self.__port.setText("")
             self.__port.setPlaceholderText("Retype an port...")
         except:
-            self.__Help()
+            self.__UnValid()
 
 
     def message_recu(self):
