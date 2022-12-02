@@ -4,8 +4,9 @@ import psutil
 
 
 def ipconfig():
-    cmd = str(subprocess.check_output('ipconfig',shell=True))
-    x = cmd.replace('\\r',"").replace('\\b','').replace('\\n','\n').replace('\\xff','').replace("'",'')
+    host = socket.gethostname()
+    cmd = socket.gethostbyname(host)
+    x = cmd.replace('\\r', "").replace('\\b', '').replace('\\n', '\n').replace('\\xff', '').replace("'", '')
     return x
 
 
