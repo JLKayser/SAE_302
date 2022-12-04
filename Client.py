@@ -3,12 +3,26 @@ from threading import Thread
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit
 from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
+import time
+from PyQt5.QtCore import Qt
+
+
+'''class Worker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def run(self):
+        """Long-running task."""
+        for i in range(5):
+            time.sleep(1)
+            self.progress.emit(i + 1)
+        self.finished.emit()
+'''
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        #self.__aide = None
 
         widget = QWidget()
         self.resize(450,300)
@@ -60,6 +74,28 @@ class MainWindow(QMainWindow):
         self.__envoie.clicked.connect(self.__message_send)
         self.setWindowTitle("SAE-302")
 
+    '''def runLongTask(self):
+        # Step 2: Create a QThread object
+        self.thread = QThread()
+        # Step 3: Create a worker object
+        self.worker = Worker()
+        # Step 4: Move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # Step 5: Connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        # Step 6: Start the thread
+        self.thread.start()
+
+        # Final resets
+        self.__pushCommand.setEnabled(False)
+        self.thread.finished.connect(
+            lambda: self.__pushCommand.setEnabled(True)
+        )'''
+
+
     def __UnValid(self):
         msg = QMessageBox()
         msg.setWindowTitle("Not valid")
@@ -74,9 +110,7 @@ class MainWindow(QMainWindow):
             HOST = self.__addressIP.text()
             PORT = int(self.__port.text())
             self.socket = connect(HOST,PORT)
-            thread_send = Thread(target=self.__message_send)
             thread_recu = Thread(target=self.__message_recu)
-            thread_send.start()
             thread_recu.start()
             self.__addressIP.setText("")
             self.__addressIP.setPlaceholderText("Retype an IP address...")
@@ -92,22 +126,21 @@ class MainWindow(QMainWindow):
             self.__text.appendPlainText('-> ' + msg + '\n')
 
     def __message_send(self):
-        while True:
-            try:
-                msg = self.__pushCommand.text()
-                if msg == 'reset':
-                    self.socket.close()
-                    client_socket = socket(AF_INET, SOCK_STREAM)
-                    # new_connection(connection.getpeername())
-                    # client_socket.connect((HOST, PORT))
-                    # client_socket.sendall(bytes("This is from Client", 'UTF-8'))
-                    # msg_send()
-                if msg != 'disconnect':
-                    self.socket.send(msg.encode())
-                else:
-                    self.disconnect()
-            except EOFError:
+        try:
+            msg = self.__pushCommand.text()
+            if msg == 'reset':
+                self.socket.close()
+                client_socket = socket(AF_INET, SOCK_STREAM)
+                # new_connection(connection.getpeername())
+                # client_socket.connect((HOST, PORT))
+                # client_socket.sendall(bytes("This is from Client", 'UTF-8'))
+                # msg_send()
+            if msg != 'disconnect':
+                self.socket.send(msg.encode())
+            else:
                 self.disconnect()
+        except EOFError:
+            pass
 
     def disconnect(self):
         self.socket.send('disconnect'.encode())
