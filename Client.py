@@ -58,7 +58,6 @@ class MainWindow(QMainWindow):
         self.__tab1.layout.addWidget(self.__okay, 2, 1)
 
 
-        '''self.__help.clicked.connect(self.__Help)'''
         self.__connect.clicked.connect(self.__connection)
         self.__addressIP.returnPressed.connect(self.__connection)
         self.__port.returnPressed.connect(self.__connection)
@@ -68,7 +67,7 @@ class MainWindow(QMainWindow):
 
 
 
-    def __UnValid(self):
+    def __InValid(self):
         msg = QMessageBox()
         msg.setWindowTitle("Not valid")
         msg.resize(500, 500)
@@ -76,7 +75,7 @@ class MainWindow(QMainWindow):
         msg.setText("Please enter a valid IP address or port !")
         msg.exec()
 
-    def __UnValidCommand(self):
+    def __InValidCommand(self):
         msg = QMessageBox()
         msg.setWindowTitle("Not valid")
         msg.resize(500, 500)
@@ -100,30 +99,30 @@ class MainWindow(QMainWindow):
             self.__port.setPlaceholderText("Retype an port...")
             self.__okay.setText("Connection is successful !")
         except:
-            self.__UnValid()
+            self.__InValid()
 
 
     def __message_recu(self):
-        try:
-            while True:
-                    msg = self.socket.recv(1024).decode()
-                    self.__text.setText('-> ' + msg)
-                    self.__pushCommand.setText("")
-                    self.__pushCommand.setPlaceholderText("Retype a command...")
-        except:
-            self.__UnValidCommand()
+        while True:
+            try:
+                msg = self.socket.recv(1024).decode()
+                self.__text.setText('-> ' + msg)
+                self.__pushCommand.setText("")
+                self.__pushCommand.setPlaceholderText("Retype a command...")
+            except:
+                self.__InValidCommand()
 
     def __message_send(self):
         try:
             msg = self.__pushCommand.text()
-            if msg == 'reset':
+            if msg.lower() == 'reset':
                 self.socket.close()
-                client_socket = socket(AF_INET, SOCK_STREAM)
+                #client_socket = socket(AF_INET, SOCK_STREAM)
                 # new_connection(connection.getpeername())
                 # client_socket.connect((HOST, PORT))
                 # client_socket.sendall(bytes("This is from Client", 'UTF-8'))
                 # msg_send()
-            if msg != 'disconnect':
+            if msg.lower() != 'disconnect':
                 self.socket.send(msg.encode())
             else:
                 self.disconnect()
