@@ -1,24 +1,12 @@
 from socket import AF_INET, SOCK_STREAM , socket
 from threading import Thread
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit, QTextEdit
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 import time
 from PyQt5.QtCore import Qt
 
-
-'''class Worker(QObject):
-    finished = pyqtSignal()
-    progress = pyqtSignal(int)
-
-    def run(self):
-        """Long-running task."""
-        for i in range(5):
-            time.sleep(1)
-            self.progress.emit(i + 1)
-        self.finished.emit()
-'''
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -51,13 +39,13 @@ class MainWindow(QMainWindow):
         self.__tab1.layout.addWidget(self.__pushCommand)
         self.__tab1.setLayout(self.__tab1.layout)
         #self.connect.setStyleSheet("border-radius:5px;background-color:black;color:white;height:20px;width:40px;")
-        self.__text = QPlainTextEdit()
-        self.__text.setReadOnly(True)
+        self.__text = QLabel("Welcome To my Shell")
+        #self.__text.setReadOnly(True)
         self.__tab3.layout.addWidget(self.__text)
         self.__text.move(10, 10)
         self.__text.resize(400, 200)
         self.__tab3.setLayout(self.__tab3.layout)
-        self.__text.setPlaceholderText('Bienvenue sur mon invite de commande !')
+        #self.__text.setPlaceholderText('Bienvenue sur mon invite de commande !')
 
 
         grid.addWidget(self.__tabs, 0, 0)
@@ -72,28 +60,9 @@ class MainWindow(QMainWindow):
         '''self.__help.clicked.connect(self.__Help)'''
         self.__connect.clicked.connect(self.__connection)
         self.__envoie.clicked.connect(self.__message_send)
+        self.__pushCommand.returnPressed.connect(self.__message_send)
         self.setWindowTitle("SAE-302")
 
-    '''def runLongTask(self):
-        # Step 2: Create a QThread object
-        self.thread = QThread()
-        # Step 3: Create a worker object
-        self.worker = Worker()
-        # Step 4: Move worker to the thread
-        self.worker.moveToThread(self.thread)
-        # Step 5: Connect signals and slots
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        # Step 6: Start the thread
-        self.thread.start()
-
-        # Final resets
-        self.__pushCommand.setEnabled(False)
-        self.thread.finished.connect(
-            lambda: self.__pushCommand.setEnabled(True)
-        )'''
 
 
     def __UnValid(self):
@@ -111,7 +80,9 @@ class MainWindow(QMainWindow):
             PORT = int(self.__port.text())
             self.socket = connect(HOST,PORT)
             thread_recu = Thread(target=self.__message_recu)
+            thread_envoie = Thread(target=self.__message_send)
             thread_recu.start()
+            thread_envoie.start()
             self.__addressIP.setText("")
             self.__addressIP.setPlaceholderText("Retype an IP address...")
             self.__port.setText("")
@@ -123,7 +94,8 @@ class MainWindow(QMainWindow):
     def __message_recu(self):
         while True:
             msg = self.socket.recv(1024).decode()
-            self.__text.appendPlainText('-> ' + msg + '\n')
+            self.__text.setText('-> ' + msg)
+            self.__pushCommand.setText("")
 
     def __message_send(self):
         try:
