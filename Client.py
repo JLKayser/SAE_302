@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
         self.__pushCommand.setPlaceholderText("Type a command...")
         self.__addressIP = QLineEdit("")
         self.__addressIP.setPlaceholderText("Type an IP address...")
+        self.__okay = QLabel("Waiting for a connection")
         self.__port = QLineEdit("")
         self.__port.setPlaceholderText("Type an port...")
         self.__connect = QPushButton('Connect')
@@ -54,11 +55,13 @@ class MainWindow(QMainWindow):
         self.__tab1.layout.addWidget(self.__connect, 2, 0)
         self.__tab1.layout.addWidget(self.__addressIP, 1, 0)
         self.__tab1.layout.addWidget(self.__port, 1, 1)
-
+        self.__tab1.layout.addWidget(self.__okay, 2, 1)
 
 
         '''self.__help.clicked.connect(self.__Help)'''
         self.__connect.clicked.connect(self.__connection)
+        self.__addressIP.returnPressed.connect(self.__connection)
+        self.__port.returnPressed.connect(self.__connection)
         self.__envoie.clicked.connect(self.__message_send)
         self.__pushCommand.returnPressed.connect(self.__message_send)
         self.setWindowTitle("SAE-302")
@@ -71,6 +74,14 @@ class MainWindow(QMainWindow):
         msg.resize(500, 500)
         msg.setIcon(QMessageBox.Critical)
         msg.setText("Please enter a valid IP address or port !")
+        msg.exec()
+
+    def __UnValidCommand(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Not valid")
+        msg.resize(500, 500)
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText("Please enter a valid command !")
         msg.exec()
 
 
@@ -87,15 +98,20 @@ class MainWindow(QMainWindow):
             self.__addressIP.setPlaceholderText("Retype an IP address...")
             self.__port.setText("")
             self.__port.setPlaceholderText("Retype an port...")
+            self.__okay.setText("Connection is successful !")
         except:
             self.__UnValid()
 
 
     def __message_recu(self):
-        while True:
-            msg = self.socket.recv(1024).decode()
-            self.__text.setText('-> ' + msg)
-            self.__pushCommand.setText("")
+        try:
+            while True:
+                    msg = self.socket.recv(1024).decode()
+                    self.__text.setText('-> ' + msg)
+                    self.__pushCommand.setText("")
+                    self.__pushCommand.setPlaceholderText("Retype a command...")
+        except:
+            self.__UnValidCommand()
 
     def __message_send(self):
         try:
