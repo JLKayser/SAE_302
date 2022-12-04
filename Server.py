@@ -71,6 +71,7 @@ class ClientThread(threading.Thread):
                     if msg.lower() == 'disconnect':
                       break
                     if msg.lower() == 'kill':
+                        self.csocket.send("Kill".encode())
                         server.close()
                         break
                     '''if msg=='reset':
