@@ -111,7 +111,19 @@ class MainWindow(QMainWindow):
         while True:
             try:
                 msg = self.socket.recv(1024).decode()
-                self.__recv.append('-> ' + msg + '\n')
+                if msg.lower() == 'reset':
+                    self.socket.close()
+                    self.__recv.append('DISCONNECTED')
+                    break
+                elif msg.lower() == 'kill':
+                    self.socket.close()
+                    self.__recv.append('DISCONNECTED')
+                    break
+                elif msg.lower() == 'disconnect':
+                    self.socket.close()
+                    self.__recv.append('DISCONNECTED')
+                    break
+                self.__recv.append('-> ' + self.__pushCommand.text() + '\n' + msg + '\n')
                 self.__pushCommand.setText("")
                 self.__pushCommand.setPlaceholderText("Retype a command...")
             except:
@@ -120,24 +132,9 @@ class MainWindow(QMainWindow):
     def __message_send(self):
         try:
             msg = self.__pushCommand.text()
-            if msg.lower() == 'reset':
-                self.socket.close()
-                #client_socket = socket(AF_INET, SOCK_STREAM)
-                # new_connection(connection.getpeername())
-                # client_socket.connect((HOST, PORT))
-                # client_socket.sendall(bytes("This is from Client", 'UTF-8'))
-                # msg_send()
-            if msg.lower() != 'disconnect':
-                self.socket.send(msg.encode())
-            else:
-                self.disconnect()
-        except EOFError:
+            self.socket.send(msg.encode())
+        except:
             pass
-
-    def disconnect(self):
-        self.socket.send('disconnect'.encode())
-        self.socket.close()
-        sys.exit(0)
 
 
 
