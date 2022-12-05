@@ -3,54 +3,43 @@ import sys , os , subprocess
 import psutil
 
 
-def ipconfig():
-    host = socket.gethostname()
-    cmd = socket.gethostbyname(host)
-    x = cmd.replace('\\r', "").replace('\\b', '').replace('\\n', '\n').replace('\\xff', '').replace("'", '')
-    return x
 
-
-def hostname():
-    cmd = str(subprocess.check_output('hostname',shell=True))
-    x = cmd.replace('\\r', "").replace('\\b', '').replace('\\n', '\n').replace('\\xff', '').replace('b',"").replace("'",'')
-    return x
-
-
-def os_command():
-    cmd = sys.platform
-    if cmd == 'win32':
-        cmd = 'OS de la machine est Windows'
-    if cmd == 'linux' or cmd == 'linux2':
-        cmd = 'OS de la machine est Linux'
-    if cmd == 'darwin':
-        cmd = 'OS de la machine est MAC OS X'
-    x = cmd.replace('\\r', "").replace('\\b', '').replace('\\n', '\n').replace('\\xff', '').replace("'",'')
-    return x
-
-def ram():
-    cmd = str(subprocess.check_output('wmic memphysical get MaxCapacity', shell=True))
-    x = cmd.replace('\\r', "").replace('\\b', '').replace('\\n', '').replace('\\xff', '').replace('b', "").replace("'",'')
-    return f'RAM {x}KB'
-
-
-def aide():
-    return ('CMD HELP:\n'
-            '- IP\n'
-            '- HOSTNAME\n'
-            '- RAM\n'
-            '- OS\n'
-            '- CPU\n')
-
-
-def cpu():
-    cmd = psutil.cpu_percent()
-    return f'Capacity CPU: {cmd} %'
-
-
-'''def reset():
-    x = sys.argv[0]
-    cmd = os.system(x + ' py')
-    return cmd'''
+def cmd(cmd):
+    try:
+        if cmd.lower() == 'os':
+            x = sys.platform
+            if x == 'win32':
+                x = 'OS de la machine est Windows'
+            elif x == 'linux' or x == 'linux2':
+                x = 'OS de la machine est Linux'
+            elif x == 'darwin':
+                x = 'OS de la machine est MAC OS X'
+            return x
+        if cmd.lower() == 'ram':
+            x = str(f'- Total Memory: {psutil.virtual_memory()[0]} bytes\n - Used Memory: {psutil.virtual_memory()[1]} bytes\n - Free Memory: {psutil.virtual_memory()[4]} bytes')
+            return f'RAM:\n {x}'
+        if cmd.lower() == 'cpu':
+            x = psutil.cpu_percent()
+            return f'Capacity CPU: {x} %'
+        if cmd.lower() == 'ip':
+            host = socket.gethostname()
+            x = socket.gethostbyname(host)
+            return x
+        if cmd.lower() == 'name':
+            x = socket.gethostname()
+            return x
+        if cmd.lower() == 'help':
+            return ("""CMD HELP:
+    - IP
+    - NAME
+    - RAM
+    - OS
+    - CPU
+    - KILL
+    - RESET
+    - DISCONNECT""")
+    except:
+        pass
 
 
 class ClientThread(threading.Thread):
@@ -65,39 +54,23 @@ class ClientThread(threading.Thread):
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while True:
             try:
-                data = self.csocket.recv(2048)
+                data = self.csocket.recv(1024)
                 if data is not None:
                     msg = data.decode()
                     if msg.lower() == 'disconnect':
-                      break
+                        self.csocket.close()
+                        break
                     if msg.lower() == 'kill':
                         self.csocket.send("Kill".encode())
                         server.close()
                         break
-                    '''if msg=='reset':
-                        reset()
-                        break'''
-                    if msg.lower() == 'ip':
-                        self.csocket.send(ipconfig().encode())
-                    if msg.lower() == 'hostname':
-                        self.csocket.send(hostname().encode())
-                    if msg.lower() == 'os':
-                        self.csocket.send(os_command().encode())
-                    if msg.lower() == 'ram':
-                        self.csocket.send(ram().encode())
-                    if msg.lower() == 'help':
-                        self.csocket.send(aide().encode())
-                    if msg.lower() == 'cpu':
-                        self.csocket.send(cpu().encode())
-                    print ("from client", msg)
+                    self.csocket.send(cmd(msg).encode())
             except:
-                print("Client disconnected")
-                self.csocket.close()
-                break
+                pass
         print ("Client at ", clientAddress, " disconnected...")
 
 
-PORT = 5500
+PORT = int(input('Please enter a port: '))
 ADDRESS = '0.0.0.0'
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
