@@ -2,10 +2,6 @@ from socket import AF_INET, SOCK_STREAM , socket
 from threading import Thread
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit, QTextEdit
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtCore import QObject, QThread, pyqtSignal
-import time
-from PyQt5.QtCore import Qt
 
 
 class MainWindow(QMainWindow):
@@ -114,14 +110,23 @@ class MainWindow(QMainWindow):
                 if msg.lower() == 'reset':
                     self.socket.close()
                     self.__recv.append('DISCONNECTED')
+                    self.__pushCommand.setText("")
+                    self.__pushCommand.setPlaceholderText("Retype a command...")
+                    self.__okay.setText("The connection was interrupted")
                     break
                 elif msg.lower() == 'kill':
                     self.socket.close()
                     self.__recv.append('DISCONNECTED')
+                    self.__pushCommand.setText("")
+                    self.__pushCommand.setPlaceholderText("Retype a command...")
+                    self.__okay.setText("The connection was interrupted")
                     break
                 elif msg.lower() == 'disconnect':
                     self.socket.close()
                     self.__recv.append('DISCONNECTED')
+                    self.__pushCommand.setText("")
+                    self.__pushCommand.setPlaceholderText("Retype a command...")
+                    self.__okay.setText("The connection was interrupted")
                     break
                 self.__recv.append('-> ' + self.__pushCommand.text() + '\n' + msg + '\n')
                 self.__pushCommand.setText("")
@@ -144,40 +149,6 @@ def connect(HOST:str,PORT:int):
     client_socket.connect((HOST,PORT))
     client_socket.sendall(bytes("This is from Client",'UTF-8'))
     return client_socket
-
-
-'''def msg_send(connection):
-    user = input('Enter your username : ')
-    while True:
-        try:
-            msg = input(f'{user}-> ')
-            if msg == 'reset':
-                connection.close()
-                client_socket = socket(AF_INET, SOCK_STREAM)
-                #new_connection(connection.getpeername())
-                #client_socket.connect((HOST, PORT))
-                #client_socket.sendall(bytes("This is from Client", 'UTF-8'))
-                #msg_send()
-            if msg != 'disconnect':
-                connection.send(msg.encode())
-            else:
-                disconnect(connection)
-        except EOFError:
-            disconnect(connection)'''''
-
-
-def new_connection():
-    pass
-
-
-'''def recv_msg(connection):
-    while True:
-        try:
-            msg = connection.recv(1024).decode()
-            print(msg)
-        except:
-            pass'''
-
 
 
 
