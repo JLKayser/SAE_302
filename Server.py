@@ -40,9 +40,9 @@ def cmd(cmd):
     - DISCONNECT""")
         if cmd[0:4].lower() == 'dos:':
             x = cmd.split(":",1)[1]
-            out = subprocess.Popen(x, encoding='utf-8', stdout=subprocess.PIPE, shell=True,)
-            output = out.stdout.read()
-            return output
+            out = subprocess.getoutput(x)
+            return out
+        return 'UNKNOWN COMMAND'
     except:
         pass
 
@@ -55,21 +55,31 @@ class ClientThread(threading.Thread):
 
 
     def run(self):
+        global reset
+        global arret
         print ("Connection from : ", clientAddress)
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while True:
             try:
                 data = self.csocket.recv(1024)
-                if data is not None:
-                    msg = data.decode()
+                msg = data.decode()
+                if len(msg) > 0:
                     if msg.lower() == 'disconnect':
+                        self.csocket.send('disconnect'.encode())
                         self.csocket.close()
                         break
-                    if msg.lower() == 'kill':
-                        self.csocket.send("Kill".encode())
+                    elif msg.lower() == 'kill':
+                        self.csocket.send("kill".encode())
+                        arret = True
                         server.close()
                         break
-                    self.csocket.send(cmd(msg).encode())
+                    elif msg.lower() == 'reset':
+                        self.csocket.send("reset".encode())
+                        server.close()
+                        arret = True
+                        reset = True
+                    else:
+                        self.csocket.send(cmd(msg).encode())
             except:
                 pass
         print ("Client at ", clientAddress, " disconnected...")
@@ -80,12 +90,40 @@ ADDRESS = '0.0.0.0'
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind((ADDRESS, PORT))
+server.setblocking(False)
+clients = []
+arret = False
+reset = False
 
 msg = ''
 print("Server started")
 print("Waiting for client request..")
+
+
+def reset_func():
+    global server
+    print(server)
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind((ADDRESS, PORT))
+    print('resetting...')
+    print(server)
+
 while True:
-    server.listen(1)
-    clientsock, clientAddress = server.accept()
-    newthread = ClientThread(clientAddress, clientsock)
-    newthread.start()
+    while not arret:
+        try:
+            server.listen(1)
+            clientsock, clientAddress = server.accept()
+            clients.append(clientsock)
+            newthread = ClientThread(clientAddress, clientsock)
+            newthread.start()
+        except:
+            pass
+    if reset:
+        for client in clients:
+            client.close()
+        reset_func()
+        reset = False
+        arret = False
+    else:
+        break
