@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         #self.__text.setPlaceholderText('Bienvenue sur mon invite de commande !')
 
 
-        grid.addWidget(self.__tabs, 0, 0)
+        grid.addWidget(self.__tabs, 0, 0, 1,2)
         grid.addWidget(self.__pushCommand, 3, 0)
         grid.addWidget(self.__envoie, 3, 1)
         self.__tab1.layout.addWidget(self.__connect, 2, 0)
