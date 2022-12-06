@@ -147,7 +147,6 @@ class MainWindow(QMainWindow):
 def connect(HOST:str,PORT:int):
     client_socket = socket(AF_INET, SOCK_STREAM)
     client_socket.connect((HOST,PORT))
-    client_socket.sendall(bytes("This is from Client",'UTF-8'))
     return client_socket
 
 
