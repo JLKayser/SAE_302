@@ -2,6 +2,7 @@ from socket import AF_INET, SOCK_STREAM , socket
 from threading import Thread
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit, QTextEdit
+import csv
 
 
 class MainWindow(QMainWindow):
@@ -25,6 +26,7 @@ class MainWindow(QMainWindow):
         self.__tab1.layout = QGridLayout()
         self.__tab3.layout = QGridLayout()
         self.__pushCommand = QLineEdit("")
+        self.__csv = QLabel("")
         self.__envoie = QPushButton("Send")
         self.__pushCommand.setPlaceholderText("Type a command...")
         self.__addressIP = QLineEdit("")
@@ -67,6 +69,15 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("SAE-302")
 
 
+    def __csvFile(self):
+        info = ['ip', 'port']
+        x = [f"{self.__addressIP.text()}, {self.__port.text()}"]
+
+        with open('Info-Server.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(info)
+            writer.writerow(x)
+
 
     def __InValid(self):
         msg = QMessageBox()
@@ -74,14 +85,6 @@ class MainWindow(QMainWindow):
         msg.resize(500, 500)
         msg.setIcon(QMessageBox.Critical)
         msg.setText("Please enter a valid IP address or port !")
-        msg.exec()
-
-    def __InValidCommand(self):
-        msg = QMessageBox()
-        msg.setWindowTitle("Not valid")
-        msg.resize(500, 500)
-        msg.setIcon(QMessageBox.Critical)
-        msg.setText("Please enter a valid command !")
         msg.exec()
 
 
@@ -94,6 +97,7 @@ class MainWindow(QMainWindow):
             thread_envoie = Thread(target=self.__message_send)
             thread_recu.start()
             thread_envoie.start()
+            self.__csvFile()
             self.__addressIP.setText("")
             self.__addressIP.setPlaceholderText("Retype an IP address...")
             self.__port.setText("")
@@ -105,7 +109,6 @@ class MainWindow(QMainWindow):
 
     def __message_recu(self):
         while True:
-            try:
                 msg = self.socket.recv(1024).decode()
                 if msg.lower() == 'reset':
                     self.socket.close()
@@ -131,8 +134,6 @@ class MainWindow(QMainWindow):
                 self.__recv.append('-> ' + self.__pushCommand.text() + '\n' + msg + '\n')
                 self.__pushCommand.setText("")
                 self.__pushCommand.setPlaceholderText("Retype a command...")
-            except:
-                self.__InValidCommand()
 
     def __message_send(self):
         try:
