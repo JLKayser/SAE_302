@@ -110,14 +110,14 @@ class MainWindow(QMainWindow):
                 msg = self.socket.recv(1024).decode()
                 if msg.lower() == 'reset':
                     self.socket.close()
-                    self.__recv.append('DISCONNECTED')
+                    self.__recv.append('RESET')
                     self.__pushCommand.setText("")
                     self.__pushCommand.setPlaceholderText("Retype a command...")
                     self.__okay.setText("The connection was interrupted")
                     break
                 elif msg.lower() == 'kill':
                     self.socket.close()
-                    self.__recv.append('DISCONNECTED')
+                    self.__recv.append('KILL')
                     self.__pushCommand.setText("")
                     self.__pushCommand.setPlaceholderText("Retype a command...")
                     self.__okay.setText("The connection was interrupted")
