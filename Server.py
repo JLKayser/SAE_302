@@ -72,7 +72,7 @@ def cmd(cmd):
         try:
             if cmd[0:11].lower() == 'powershell:':
                 x = cmd.split(":",1)[1]
-                out = subprocess.getoutput('PowerShell -command "' + x +'"')
+                out = subprocess.getoutput('PowerShell -command "' + x + '"')
                 return out
         except:
             return 'PowerShell commands are not recognized try DOS or Linux'
