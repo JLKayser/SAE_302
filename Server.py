@@ -118,8 +118,7 @@ class ClientThread(threading.Thread):
                 pass
         print ("Client at ", clientAddress, " disconnected...")
 
-
-PORT = int(input('Please enter a port: '))
+PORT = int(sys.argv[1])
 ADDRESS = '0.0.0.0'
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
