@@ -47,17 +47,21 @@ def cmd(cmd):
     - RESET
     - DISCONNECT
     - PING
+    - CLEAR
     - PYHTON --VERSION
     - DOS:
     - Linux:
     - PowerShell:""")
         try:
             if cmd[0:4].lower() == 'dos:':
-                x = cmd.split(":",1)[1]
-                out = subprocess.getoutput(x)
-                return out
+                if sys.platform == "win32":
+                    x = cmd.split(":",1)[1]
+                    out = subprocess.getoutput(x)
+                    return out
+                else:
+                    return 'DOS commands are not recognized try linux'
         except:
-            return 'DOS commands are not recognized try powershell or linux'
+            return 'Error command'
         try:
             if cmd[0:6].lower() == 'linux:':
                 if sys.platform == "linux" or sys.platform == "linux2":
@@ -71,11 +75,14 @@ def cmd(cmd):
             return 'Error command'
         try:
             if cmd[0:11].lower() == 'powershell:':
-                x = cmd.split(":",1)[1]
-                out = subprocess.getoutput('PowerShell -command "' + x + '"')
-                return out
+                if sys.platform == "win32":
+                    x = cmd.split(":",1)[1]
+                    out = subprocess.getoutput('PowerShell -command "' + x + '"')
+                    return out
+                else:
+                    return 'PowerShell commands are not recognized try Linux'
         except:
-            return 'PowerShell commands are not recognized try DOS or Linux'
+            return 'Error command'
         return f'{cmd} Invalid command'
     except:
         pass
