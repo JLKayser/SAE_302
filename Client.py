@@ -11,7 +11,7 @@ class TabCMD(QMainWindow):
 
         self.__tabs = QTabWidget()
         self.__tab = QWidget()
-        self.__jesuisconnecte = True
+        self.__connected = True
         self.__tabs.resize(300,300)
         self.__tab.layout = QGridLayout()
         self.setCentralWidget(self.__tab)
@@ -44,7 +44,7 @@ class TabCMD(QMainWindow):
         thread_recu.start()
 
     def RECU(self):
-        while self.__jesuisconnecte:
+        while self.__connected:
             try:
                 msg = self.socket.recv(1024).decode()
                 if len(msg) > 0:
@@ -79,11 +79,15 @@ class TabCMD(QMainWindow):
         try:
             msg = self.__pushCommand.text()
             self.socket.send(msg.encode())
+            if msg.lower() == 'clear':
+                self.__recv.setText("")
+                self.__pushCommand.setText("")
+                self.__pushCommand.setPlaceholderText("Retype a command...")
         except:
             pass
 
     def close(self):
-        self.__jesuisconnecte = False
+        self.__connected = False
 
 
 class MainWindow(QMainWindow):
