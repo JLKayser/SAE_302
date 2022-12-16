@@ -1,8 +1,9 @@
 from socket import AF_INET, SOCK_STREAM , socket
 from threading import Thread
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit, QTextEdit, QTableWidget,QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit, QTextEdit, QTableWidget,QTableWidgetItem, QHeaderView, QAbstractItemView
 import csv
+from PyQt5 import QtCore
 
 class TabCMD(QMainWindow):
     def __init__(self, socket):
@@ -165,10 +166,25 @@ class MainWindow(QMainWindow):
             self.__InValid()
 
 
+    def __connectionTable(self):
+        try:
+            HOST = self.__addressIP.text()
+            PORT = int(self.__port.text())
+            connection = connect(HOST,PORT)
+            self.__okay.setText("Connection is successful !")
+            x = TabCMD(connection)
+            self.__sockets.append(x)
+            self.__tabs.addTab(x,f'{HOST}:{PORT}')
+        except:
+            self.__InValid()
+
+
     def ma_table(self):
         table = QTableWidget()
         table.setColumnCount(2)
         table.setHorizontalHeaderLabels(['IP','PORT'])
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         with open('info-csv.csv', 'r') as file:
             lines = file.readlines()
             for line in lines:
@@ -188,6 +204,7 @@ class MainWindow(QMainWindow):
                 else:
                     pass
         return table
+
 
 
     def closeEvent(self, event):
